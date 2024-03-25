@@ -1,3 +1,4 @@
+// scripts\deploy_itmantoken_otc.js
 const { ethers } = require("hardhat");
 
 async function main() {
@@ -18,12 +19,12 @@ async function main() {
 
   // Deploy OTCMarket contract
   const OTCMarket = await ethers.getContractFactory("OTCMarket");
-  const otcMarket = await OTCMarket.deploy(itManToken.address); // Pass ITManToken's address as the token contract
+  const otcMarket = await OTCMarket.deploy(); // Usunięcie argumentu
   await otcMarket.deployed();
   console.log("OTCMarket deployed to:", otcMarket.address);
 
-  // Optionally, you might want to approve the OTCMarket contract to spend tokens on behalf of the owner,
-  // or perform other setup actions necessary for your application.
+  // Tutaj można dodać logikę ustawiania uprawnień dla kontraktu OTCMarket, jeśli jest to konieczne
+  // Na przykład: approve OTCMarket contract to spend tokens on behalf of the token owner.
 }
 
 main()

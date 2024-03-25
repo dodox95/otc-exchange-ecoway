@@ -28,233 +28,241 @@ import type {
 } from "../../common";
 
 export declare namespace OTCMarket {
-  export type OrderStruct = {
-    issuer: string;
-    amount: BigNumberish;
-    totalPrice: BigNumberish;
-    isBuyOrder: boolean;
-    isActive: boolean;
+  export type EthListingStruct = {
+    buyer: string;
+    amountEth: BigNumberish;
+    tokenAddress: string;
+    tokenAmountWanted: BigNumberish;
   };
 
-  export type OrderStructOutput = [
+  export type EthListingStructOutput = [
     string,
     BigNumber,
-    BigNumber,
-    boolean,
-    boolean
+    string,
+    BigNumber
   ] & {
-    issuer: string;
+    buyer: string;
+    amountEth: BigNumber;
+    tokenAddress: string;
+    tokenAmountWanted: BigNumber;
+  };
+
+  export type TokenListingStruct = {
+    seller: string;
+    tokenAddress: string;
+    amount: BigNumberish;
+    price: BigNumberish;
+  };
+
+  export type TokenListingStructOutput = [
+    string,
+    string,
+    BigNumber,
+    BigNumber
+  ] & {
+    seller: string;
+    tokenAddress: string;
     amount: BigNumber;
-    totalPrice: BigNumber;
-    isBuyOrder: boolean;
-    isActive: boolean;
+    price: BigNumber;
   };
 }
 
 export interface OTCMarketInterface extends utils.Interface {
   functions: {
-    "cancelOrder(uint256)": FunctionFragment;
-    "confirmOrderExecution(uint256)": FunctionFragment;
-    "executeOrder(uint256)": FunctionFragment;
-    "fee()": FunctionFragment;
-    "feeRecipient()": FunctionFragment;
-    "getActiveBuyOrders()": FunctionFragment;
-    "getActiveSellOrders()": FunctionFragment;
-    "orders(uint256)": FunctionFragment;
+    "cancelListing(uint256,bool)": FunctionFragment;
+    "cancelListingByOwner(uint256,bool)": FunctionFragment;
+    "ethListings(uint256)": FunctionFragment;
+    "getActiveEthListings()": FunctionFragment;
+    "getActiveTokenListings()": FunctionFragment;
+    "listEthForTokens(address,uint256)": FunctionFragment;
+    "listTokenForSale(address,uint256,uint256)": FunctionFragment;
+    "nextEthListingId()": FunctionFragment;
+    "nextTokenListingId()": FunctionFragment;
     "owner()": FunctionFragment;
-    "placeOrder(uint256,uint256,bool)": FunctionFragment;
+    "purchaseTokenWithEth(uint256)": FunctionFragment;
+    "purchaseTokenWithListing(uint256,uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "setFee(uint256)": FunctionFragment;
-    "setFeeRecipient(address)": FunctionFragment;
-    "token()": FunctionFragment;
+    "tokenListings(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "withdrawFees()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "cancelOrder"
-      | "confirmOrderExecution"
-      | "executeOrder"
-      | "fee"
-      | "feeRecipient"
-      | "getActiveBuyOrders"
-      | "getActiveSellOrders"
-      | "orders"
+      | "cancelListing"
+      | "cancelListingByOwner"
+      | "ethListings"
+      | "getActiveEthListings"
+      | "getActiveTokenListings"
+      | "listEthForTokens"
+      | "listTokenForSale"
+      | "nextEthListingId"
+      | "nextTokenListingId"
       | "owner"
-      | "placeOrder"
+      | "purchaseTokenWithEth"
+      | "purchaseTokenWithListing"
       | "renounceOwnership"
-      | "setFee"
-      | "setFeeRecipient"
-      | "token"
+      | "tokenListings"
       | "transferOwnership"
-      | "withdrawFees"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "cancelOrder",
+    functionFragment: "cancelListing",
+    values: [BigNumberish, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "cancelListingByOwner",
+    values: [BigNumberish, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ethListings",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "confirmOrderExecution",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "executeOrder",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(functionFragment: "fee", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "feeRecipient",
+    functionFragment: "getActiveEthListings",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getActiveBuyOrders",
+    functionFragment: "getActiveTokenListings",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getActiveSellOrders",
+    functionFragment: "listEthForTokens",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "listTokenForSale",
+    values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "nextEthListingId",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "orders",
-    values: [BigNumberish]
+    functionFragment: "nextTokenListingId",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "placeOrder",
-    values: [BigNumberish, BigNumberish, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setFee",
+    functionFragment: "purchaseTokenWithEth",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setFeeRecipient",
-    values: [string]
+    functionFragment: "purchaseTokenWithListing",
+    values: [BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "token", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenListings",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdrawFees",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
-    functionFragment: "cancelOrder",
+    functionFragment: "cancelListing",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "confirmOrderExecution",
+    functionFragment: "cancelListingByOwner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "executeOrder",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "fee", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "feeRecipient",
+    functionFragment: "ethListings",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getActiveBuyOrders",
+    functionFragment: "getActiveEthListings",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getActiveSellOrders",
+    functionFragment: "getActiveTokenListings",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "orders", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "listEthForTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "listTokenForSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "nextEthListingId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "nextTokenListingId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "placeOrder", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "purchaseTokenWithEth",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "purchaseTokenWithListing",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setFee", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setFeeRecipient",
+    functionFragment: "tokenListings",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "withdrawFees",
     data: BytesLike
   ): Result;
 
   events: {
-    "OrderCancelled(uint256)": EventFragment;
-    "OrderConfirmed(uint256,address)": EventFragment;
-    "OrderExecuted(uint256,address,uint256)": EventFragment;
-    "OrderPlaced(uint256,bool,address,uint256,uint256)": EventFragment;
+    "EthListed(uint256,address,uint256,address,uint256)": EventFragment;
+    "ListingCancelled(uint256,bool)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "PurchasedWithEth(uint256,address,uint256)": EventFragment;
+    "PurchasedWithToken(uint256,address,uint256,uint256)": EventFragment;
+    "TokenListed(uint256,address,uint256,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "OrderCancelled"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OrderConfirmed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OrderExecuted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "OrderPlaced"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EthListed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ListingCancelled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PurchasedWithEth"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PurchasedWithToken"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenListed"): EventFragment;
 }
 
-export interface OrderCancelledEventObject {
-  orderId: BigNumber;
-}
-export type OrderCancelledEvent = TypedEvent<
-  [BigNumber],
-  OrderCancelledEventObject
->;
-
-export type OrderCancelledEventFilter = TypedEventFilter<OrderCancelledEvent>;
-
-export interface OrderConfirmedEventObject {
-  orderId: BigNumber;
-  issuer: string;
-}
-export type OrderConfirmedEvent = TypedEvent<
-  [BigNumber, string],
-  OrderConfirmedEventObject
->;
-
-export type OrderConfirmedEventFilter = TypedEventFilter<OrderConfirmedEvent>;
-
-export interface OrderExecutedEventObject {
-  orderId: BigNumber;
+export interface EthListedEventObject {
+  listingId: BigNumber;
   buyer: string;
-  amount: BigNumber;
+  amountEth: BigNumber;
+  tokenAddress: string;
+  tokenAmountWanted: BigNumber;
 }
-export type OrderExecutedEvent = TypedEvent<
-  [BigNumber, string, BigNumber],
-  OrderExecutedEventObject
+export type EthListedEvent = TypedEvent<
+  [BigNumber, string, BigNumber, string, BigNumber],
+  EthListedEventObject
 >;
 
-export type OrderExecutedEventFilter = TypedEventFilter<OrderExecutedEvent>;
+export type EthListedEventFilter = TypedEventFilter<EthListedEvent>;
 
-export interface OrderPlacedEventObject {
-  orderId: BigNumber;
-  isBuyOrder: boolean;
-  issuer: string;
-  amount: BigNumber;
-  totalPrice: BigNumber;
+export interface ListingCancelledEventObject {
+  listingId: BigNumber;
+  isTokenListing: boolean;
 }
-export type OrderPlacedEvent = TypedEvent<
-  [BigNumber, boolean, string, BigNumber, BigNumber],
-  OrderPlacedEventObject
+export type ListingCancelledEvent = TypedEvent<
+  [BigNumber, boolean],
+  ListingCancelledEventObject
 >;
 
-export type OrderPlacedEventFilter = TypedEventFilter<OrderPlacedEvent>;
+export type ListingCancelledEventFilter =
+  TypedEventFilter<ListingCancelledEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -267,6 +275,46 @@ export type OwnershipTransferredEvent = TypedEvent<
 
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
+
+export interface PurchasedWithEthEventObject {
+  listingId: BigNumber;
+  seller: string;
+  amountEth: BigNumber;
+}
+export type PurchasedWithEthEvent = TypedEvent<
+  [BigNumber, string, BigNumber],
+  PurchasedWithEthEventObject
+>;
+
+export type PurchasedWithEthEventFilter =
+  TypedEventFilter<PurchasedWithEthEvent>;
+
+export interface PurchasedWithTokenEventObject {
+  listingId: BigNumber;
+  buyer: string;
+  amount: BigNumber;
+  price: BigNumber;
+}
+export type PurchasedWithTokenEvent = TypedEvent<
+  [BigNumber, string, BigNumber, BigNumber],
+  PurchasedWithTokenEventObject
+>;
+
+export type PurchasedWithTokenEventFilter =
+  TypedEventFilter<PurchasedWithTokenEvent>;
+
+export interface TokenListedEventObject {
+  listingId: BigNumber;
+  seller: string;
+  amount: BigNumber;
+  price: BigNumber;
+}
+export type TokenListedEvent = TypedEvent<
+  [BigNumber, string, BigNumber, BigNumber],
+  TokenListedEventObject
+>;
+
+export type TokenListedEventFilter = TypedEventFilter<TokenListedEvent>;
 
 export interface OTCMarket extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -295,264 +343,280 @@ export interface OTCMarket extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    cancelOrder(
-      orderId: BigNumberish,
+    cancelListing(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    confirmOrderExecution(
-      orderId: BigNumberish,
+    cancelListingByOwner(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    executeOrder(
-      orderId: BigNumberish,
-      overrides?: PayableOverrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    fee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    feeRecipient(overrides?: CallOverrides): Promise<[string]>;
-
-    getActiveBuyOrders(
-      overrides?: CallOverrides
-    ): Promise<[OTCMarket.OrderStructOutput[]]>;
-
-    getActiveSellOrders(
-      overrides?: CallOverrides
-    ): Promise<[OTCMarket.OrderStructOutput[]]>;
-
-    orders(
+    ethListings(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber, BigNumber, boolean, boolean] & {
-        issuer: string;
-        amount: BigNumber;
-        totalPrice: BigNumber;
-        isBuyOrder: boolean;
-        isActive: boolean;
+      [string, BigNumber, string, BigNumber] & {
+        buyer: string;
+        amountEth: BigNumber;
+        tokenAddress: string;
+        tokenAmountWanted: BigNumber;
       }
     >;
 
+    getActiveEthListings(
+      overrides?: CallOverrides
+    ): Promise<[OTCMarket.EthListingStructOutput[]]>;
+
+    getActiveTokenListings(
+      overrides?: CallOverrides
+    ): Promise<[OTCMarket.TokenListingStructOutput[]]>;
+
+    listEthForTokens(
+      _tokenAddress: string,
+      _tokenAmountWanted: BigNumberish,
+      overrides?: PayableOverrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    listTokenForSale(
+      _tokenAddress: string,
+      _amount: BigNumberish,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    nextEthListingId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    nextTokenListingId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    placeOrder(
-      amount: BigNumberish,
-      totalPrice: BigNumberish,
-      isBuyOrder: boolean,
+    purchaseTokenWithEth(
+      _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    purchaseTokenWithListing(
+      _ethListingId: BigNumberish,
+      _tokenListingId: BigNumberish,
+      overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    setFee(
-      _newFee: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    setFeeRecipient(
-      _newFeeRecipient: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    token(overrides?: CallOverrides): Promise<[string]>;
+    tokenListings(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, BigNumber, BigNumber] & {
+        seller: string;
+        tokenAddress: string;
+        amount: BigNumber;
+        price: BigNumber;
+      }
+    >;
 
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
-
-    withdrawFees(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
   };
 
-  cancelOrder(
-    orderId: BigNumberish,
+  cancelListing(
+    _listingId: BigNumberish,
+    isTokenListing: boolean,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  confirmOrderExecution(
-    orderId: BigNumberish,
+  cancelListingByOwner(
+    _listingId: BigNumberish,
+    isTokenListing: boolean,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  executeOrder(
-    orderId: BigNumberish,
-    overrides?: PayableOverrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  fee(overrides?: CallOverrides): Promise<BigNumber>;
-
-  feeRecipient(overrides?: CallOverrides): Promise<string>;
-
-  getActiveBuyOrders(
-    overrides?: CallOverrides
-  ): Promise<OTCMarket.OrderStructOutput[]>;
-
-  getActiveSellOrders(
-    overrides?: CallOverrides
-  ): Promise<OTCMarket.OrderStructOutput[]>;
-
-  orders(
+  ethListings(
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string, BigNumber, BigNumber, boolean, boolean] & {
-      issuer: string;
-      amount: BigNumber;
-      totalPrice: BigNumber;
-      isBuyOrder: boolean;
-      isActive: boolean;
+    [string, BigNumber, string, BigNumber] & {
+      buyer: string;
+      amountEth: BigNumber;
+      tokenAddress: string;
+      tokenAmountWanted: BigNumber;
     }
   >;
 
+  getActiveEthListings(
+    overrides?: CallOverrides
+  ): Promise<OTCMarket.EthListingStructOutput[]>;
+
+  getActiveTokenListings(
+    overrides?: CallOverrides
+  ): Promise<OTCMarket.TokenListingStructOutput[]>;
+
+  listEthForTokens(
+    _tokenAddress: string,
+    _tokenAmountWanted: BigNumberish,
+    overrides?: PayableOverrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  listTokenForSale(
+    _tokenAddress: string,
+    _amount: BigNumberish,
+    _price: BigNumberish,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  nextEthListingId(overrides?: CallOverrides): Promise<BigNumber>;
+
+  nextTokenListingId(overrides?: CallOverrides): Promise<BigNumber>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
-  placeOrder(
-    amount: BigNumberish,
-    totalPrice: BigNumberish,
-    isBuyOrder: boolean,
+  purchaseTokenWithEth(
+    _listingId: BigNumberish,
     overrides?: PayableOverrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  purchaseTokenWithListing(
+    _ethListingId: BigNumberish,
+    _tokenListingId: BigNumberish,
+    overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
   renounceOwnership(
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  setFee(
-    _newFee: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  setFeeRecipient(
-    _newFeeRecipient: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  token(overrides?: CallOverrides): Promise<string>;
+  tokenListings(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, string, BigNumber, BigNumber] & {
+      seller: string;
+      tokenAddress: string;
+      amount: BigNumber;
+      price: BigNumber;
+    }
+  >;
 
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  withdrawFees(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
-    cancelOrder(
-      orderId: BigNumberish,
+    cancelListing(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    confirmOrderExecution(
-      orderId: BigNumberish,
+    cancelListingByOwner(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    executeOrder(
-      orderId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    fee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    feeRecipient(overrides?: CallOverrides): Promise<string>;
-
-    getActiveBuyOrders(
-      overrides?: CallOverrides
-    ): Promise<OTCMarket.OrderStructOutput[]>;
-
-    getActiveSellOrders(
-      overrides?: CallOverrides
-    ): Promise<OTCMarket.OrderStructOutput[]>;
-
-    orders(
+    ethListings(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber, BigNumber, boolean, boolean] & {
-        issuer: string;
-        amount: BigNumber;
-        totalPrice: BigNumber;
-        isBuyOrder: boolean;
-        isActive: boolean;
+      [string, BigNumber, string, BigNumber] & {
+        buyer: string;
+        amountEth: BigNumber;
+        tokenAddress: string;
+        tokenAmountWanted: BigNumber;
       }
     >;
 
+    getActiveEthListings(
+      overrides?: CallOverrides
+    ): Promise<OTCMarket.EthListingStructOutput[]>;
+
+    getActiveTokenListings(
+      overrides?: CallOverrides
+    ): Promise<OTCMarket.TokenListingStructOutput[]>;
+
+    listEthForTokens(
+      _tokenAddress: string,
+      _tokenAmountWanted: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    listTokenForSale(
+      _tokenAddress: string,
+      _amount: BigNumberish,
+      _price: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    nextEthListingId(overrides?: CallOverrides): Promise<BigNumber>;
+
+    nextTokenListingId(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
-    placeOrder(
-      amount: BigNumberish,
-      totalPrice: BigNumberish,
-      isBuyOrder: boolean,
+    purchaseTokenWithEth(
+      _listingId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    purchaseTokenWithListing(
+      _ethListingId: BigNumberish,
+      _tokenListingId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    setFee(_newFee: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    setFeeRecipient(
-      _newFeeRecipient: string,
+    tokenListings(
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
-
-    token(overrides?: CallOverrides): Promise<string>;
+    ): Promise<
+      [string, string, BigNumber, BigNumber] & {
+        seller: string;
+        tokenAddress: string;
+        amount: BigNumber;
+        price: BigNumber;
+      }
+    >;
 
     transferOwnership(
       newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    withdrawFees(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
-    "OrderCancelled(uint256)"(
-      orderId?: BigNumberish | null
-    ): OrderCancelledEventFilter;
-    OrderCancelled(orderId?: BigNumberish | null): OrderCancelledEventFilter;
-
-    "OrderConfirmed(uint256,address)"(
-      orderId?: BigNumberish | null,
-      issuer?: string | null
-    ): OrderConfirmedEventFilter;
-    OrderConfirmed(
-      orderId?: BigNumberish | null,
-      issuer?: string | null
-    ): OrderConfirmedEventFilter;
-
-    "OrderExecuted(uint256,address,uint256)"(
-      orderId?: BigNumberish | null,
+    "EthListed(uint256,address,uint256,address,uint256)"(
+      listingId?: BigNumberish | null,
       buyer?: string | null,
-      amount?: null
-    ): OrderExecutedEventFilter;
-    OrderExecuted(
-      orderId?: BigNumberish | null,
+      amountEth?: null,
+      tokenAddress?: null,
+      tokenAmountWanted?: null
+    ): EthListedEventFilter;
+    EthListed(
+      listingId?: BigNumberish | null,
       buyer?: string | null,
-      amount?: null
-    ): OrderExecutedEventFilter;
+      amountEth?: null,
+      tokenAddress?: null,
+      tokenAmountWanted?: null
+    ): EthListedEventFilter;
 
-    "OrderPlaced(uint256,bool,address,uint256,uint256)"(
-      orderId?: BigNumberish | null,
-      isBuyOrder?: null,
-      issuer?: string | null,
-      amount?: null,
-      totalPrice?: null
-    ): OrderPlacedEventFilter;
-    OrderPlaced(
-      orderId?: BigNumberish | null,
-      isBuyOrder?: null,
-      issuer?: string | null,
-      amount?: null,
-      totalPrice?: null
-    ): OrderPlacedEventFilter;
+    "ListingCancelled(uint256,bool)"(
+      listingId?: BigNumberish | null,
+      isTokenListing?: null
+    ): ListingCancelledEventFilter;
+    ListingCancelled(
+      listingId?: BigNumberish | null,
+      isTokenListing?: null
+    ): ListingCancelledEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -562,131 +626,181 @@ export interface OTCMarket extends BaseContract {
       previousOwner?: string | null,
       newOwner?: string | null
     ): OwnershipTransferredEventFilter;
+
+    "PurchasedWithEth(uint256,address,uint256)"(
+      listingId?: BigNumberish | null,
+      seller?: string | null,
+      amountEth?: null
+    ): PurchasedWithEthEventFilter;
+    PurchasedWithEth(
+      listingId?: BigNumberish | null,
+      seller?: string | null,
+      amountEth?: null
+    ): PurchasedWithEthEventFilter;
+
+    "PurchasedWithToken(uint256,address,uint256,uint256)"(
+      listingId?: BigNumberish | null,
+      buyer?: string | null,
+      amount?: null,
+      price?: null
+    ): PurchasedWithTokenEventFilter;
+    PurchasedWithToken(
+      listingId?: BigNumberish | null,
+      buyer?: string | null,
+      amount?: null,
+      price?: null
+    ): PurchasedWithTokenEventFilter;
+
+    "TokenListed(uint256,address,uint256,uint256)"(
+      listingId?: BigNumberish | null,
+      seller?: string | null,
+      amount?: null,
+      price?: null
+    ): TokenListedEventFilter;
+    TokenListed(
+      listingId?: BigNumberish | null,
+      seller?: string | null,
+      amount?: null,
+      price?: null
+    ): TokenListedEventFilter;
   };
 
   estimateGas: {
-    cancelOrder(
-      orderId: BigNumberish,
+    cancelListing(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    confirmOrderExecution(
-      orderId: BigNumberish,
+    cancelListingByOwner(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    executeOrder(
-      orderId: BigNumberish,
+    ethListings(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getActiveEthListings(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getActiveTokenListings(overrides?: CallOverrides): Promise<BigNumber>;
+
+    listEthForTokens(
+      _tokenAddress: string,
+      _tokenAmountWanted: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
     ): Promise<BigNumber>;
 
-    fee(overrides?: CallOverrides): Promise<BigNumber>;
+    listTokenForSale(
+      _tokenAddress: string,
+      _amount: BigNumberish,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
 
-    feeRecipient(overrides?: CallOverrides): Promise<BigNumber>;
+    nextEthListingId(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getActiveBuyOrders(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getActiveSellOrders(overrides?: CallOverrides): Promise<BigNumber>;
-
-    orders(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    nextTokenListingId(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    placeOrder(
-      amount: BigNumberish,
-      totalPrice: BigNumberish,
-      isBuyOrder: boolean,
+    purchaseTokenWithEth(
+      _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    purchaseTokenWithListing(
+      _ethListingId: BigNumberish,
+      _tokenListingId: BigNumberish,
+      overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    setFee(
-      _newFee: BigNumberish,
-      overrides?: Overrides & { from?: string }
+    tokenListings(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    setFeeRecipient(
-      _newFeeRecipient: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    token(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
-
-    withdrawFees(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    cancelOrder(
-      orderId: BigNumberish,
+    cancelListing(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    confirmOrderExecution(
-      orderId: BigNumberish,
+    cancelListingByOwner(
+      _listingId: BigNumberish,
+      isTokenListing: boolean,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    executeOrder(
-      orderId: BigNumberish,
+    ethListings(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getActiveEthListings(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getActiveTokenListings(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    listEthForTokens(
+      _tokenAddress: string,
+      _tokenAmountWanted: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    feeRecipient(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getActiveBuyOrders(
-      overrides?: CallOverrides
+    listTokenForSale(
+      _tokenAddress: string,
+      _amount: BigNumberish,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    getActiveSellOrders(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    nextEthListingId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    orders(
-      arg0: BigNumberish,
+    nextTokenListingId(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    placeOrder(
-      amount: BigNumberish,
-      totalPrice: BigNumberish,
-      isBuyOrder: boolean,
+    purchaseTokenWithEth(
+      _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    purchaseTokenWithListing(
+      _ethListingId: BigNumberish,
+      _tokenListingId: BigNumberish,
+      overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    setFee(
-      _newFee: BigNumberish,
-      overrides?: Overrides & { from?: string }
+    tokenListings(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    setFeeRecipient(
-      _newFeeRecipient: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    token(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawFees(
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
   };

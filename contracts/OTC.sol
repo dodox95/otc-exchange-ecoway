@@ -1,4 +1,4 @@
-/// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -6,199 +6,229 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract OTCMarket is ReentrancyGuard, Ownable {
-	IERC20 public token;
-	uint256 public fee = 0;
-	address public feeRecipient;
-
-	struct Order {
-		address issuer;
+	struct TokenListing {
+		address seller;
+		address tokenAddress;
 		uint256 amount;
-		uint256 totalPrice; // Zmieniono z 'price' na 'totalPrice' aby lepiej odzwierciedlić logikę
-		bool isBuyOrder;
-		bool isActive;
+		uint256 price;
 	}
 
-	Order[] public orders;
+	struct EthListing {
+		address buyer;
+		uint256 amountEth;
+		address tokenAddress;
+		uint256 tokenAmountWanted;
+	}
 
-	event OrderPlaced(
-		uint256 indexed orderId,
-		bool isBuyOrder,
-		address indexed issuer,
+	mapping(uint256 => TokenListing) public tokenListings;
+	mapping(uint256 => EthListing) public ethListings;
+
+	uint256 public nextTokenListingId;
+	uint256 public nextEthListingId;
+
+	event TokenListed(
+		uint256 indexed listingId,
+		address indexed seller,
 		uint256 amount,
-		uint256 totalPrice
+		uint256 price
 	);
-	event OrderCancelled(uint256 indexed orderId);
-	event OrderExecuted(
-		uint256 indexed orderId,
+	event EthListed(
+		uint256 indexed listingId,
 		address indexed buyer,
-		uint256 amount
+		uint256 amountEth,
+		address tokenAddress,
+		uint256 tokenAmountWanted
 	);
-	event OrderConfirmed(uint256 indexed orderId, address indexed issuer);
-
-	constructor(address _tokenAddress) {
-		require(_tokenAddress != address(0), "Token address cannot be zero.");
-		token = IERC20(_tokenAddress);
-		feeRecipient = msg.sender;
-	}
-
-	function placeOrder(
+	event ListingCancelled(uint256 indexed listingId, bool isTokenListing);
+	event PurchasedWithToken(
+		uint256 indexed listingId,
+		address indexed buyer,
 		uint256 amount,
-		uint256 totalPrice,
-		bool isBuyOrder
-	) external payable {
-		require(
-			amount > 0 && totalPrice > 0,
-			"Amount and total price must be greater than 0"
-		);
+		uint256 price
+	);
+	event PurchasedWithEth(
+		uint256 indexed listingId,
+		address indexed seller,
+		uint256 amountEth
+	);
 
-		if (isBuyOrder) {
-			require(msg.value == totalPrice, "Insufficient BNB sent.");
-		} else {
-			require(
-				token.transferFrom(msg.sender, address(this), amount),
-				"Token transfer failed."
-			);
-			require(msg.value == fee, "Insufficient fee.");
-		}
-
-		payable(feeRecipient).transfer(fee);
-
-		orders.push(
-			Order({
-				issuer: msg.sender,
-				amount: amount,
-				totalPrice: totalPrice,
-				isBuyOrder: isBuyOrder,
-				isActive: true
-			})
-		);
-
-		emit OrderPlaced(
-			orders.length - 1,
-			isBuyOrder,
+	function listTokenForSale(
+		address _tokenAddress,
+		uint256 _amount,
+		uint256 _price
+	) external {
+		require(_amount > 0, "Amount must be greater than 0");
+		IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
+		tokenListings[nextTokenListingId] = TokenListing(
 			msg.sender,
-			amount,
-			totalPrice
+			_tokenAddress,
+			_amount,
+			_price
 		);
+		emit TokenListed(nextTokenListingId, msg.sender, _amount, _price);
+		nextTokenListingId++;
 	}
 
-	function cancelOrder(uint256 orderId) external {
-		Order storage order = orders[orderId];
-		require(
-			order.issuer == msg.sender,
-			"Only the issuer can cancel this order."
+	function listEthForTokens(
+		address _tokenAddress,
+		uint256 _tokenAmountWanted
+	) external payable {
+		require(msg.value > 0, "ETH amount must be greater than 0");
+		require(_tokenAmountWanted > 0, "Token amount must be greater than 0");
+		ethListings[nextEthListingId] = EthListing(
+			msg.sender,
+			msg.value,
+			_tokenAddress,
+			_tokenAmountWanted
 		);
-		require(order.isActive, "Order is already inactive.");
-
-		order.isActive = false;
-
-		if (!order.isBuyOrder) {
-			require(
-				token.transfer(msg.sender, order.amount),
-				"Token refund failed."
-			);
-		}
-
-		emit OrderCancelled(orderId);
-	}
-	// Nowa funkcja do zmiany stanu zlecenia
-	function changeOrderActiveState(uint256 orderId, bool newState) internal {
-		Order storage order = orders[orderId];
-		order.isActive = newState;
+		emit EthListed(
+			nextEthListingId,
+			msg.sender,
+			msg.value,
+			_tokenAddress,
+			_tokenAmountWanted
+		);
+		nextEthListingId++;
 	}
 
-	function executeOrder(uint256 orderId) external payable nonReentrant {
-		Order storage order = orders[orderId];
-		require(order.isActive, "Order is not active.");
-		bool success;
-
-		if (order.isBuyOrder) {
-			require(msg.value == order.totalPrice, "Incorrect BNB amount.");
-			payable(order.issuer).transfer(msg.value);
-			success = true; // Przykład, w rzeczywistości powinno to być zweryfikowane
+	function cancelListing(uint256 _listingId, bool isTokenListing) external {
+		if (isTokenListing) {
+			TokenListing memory listing = tokenListings[_listingId];
+			require(listing.seller == msg.sender, "Not the seller");
+			IERC20(listing.tokenAddress).transfer(msg.sender, listing.amount);
+			delete tokenListings[_listingId];
 		} else {
-			require(
-				token.transfer(msg.sender, order.amount),
-				"Token transfer failed."
+			EthListing memory listing = ethListings[_listingId];
+			require(listing.buyer == msg.sender, "Not the buyer");
+			payable(msg.sender).transfer(listing.amountEth);
+			delete ethListings[_listingId];
+		}
+		emit ListingCancelled(_listingId, isTokenListing);
+	}
+
+	// Nowa funkcja umożliwiająca właścicielowi anulowanie listingów
+	function cancelListingByOwner(
+		uint256 _listingId,
+		bool isTokenListing
+	) external onlyOwner {
+		if (isTokenListing) {
+			TokenListing storage listing = tokenListings[_listingId];
+			require(listing.seller != address(0), "Listing does not exist");
+			IERC20(listing.tokenAddress).transfer(
+				listing.seller,
+				listing.amount
 			);
-			payable(order.issuer).transfer(order.totalPrice);
-			success = true; // Przykład, w rzeczywistości powinno to być zweryfikowane
+			delete tokenListings[_listingId];
+		} else {
+			EthListing storage listing = ethListings[_listingId];
+			require(listing.buyer != address(0), "Listing does not exist");
+			payable(listing.buyer).transfer(listing.amountEth);
+			delete ethListings[_listingId];
 		}
-
-		if (success) {
-			emit OrderExecuted(orderId, msg.sender, order.amount);
-			// Nie zmieniamy stanu zlecenia na nieaktywne tutaj
-		}
-		// W przypadku niepowodzenia, transakcja zostanie cofnięta, więc nie musimy obsługiwać "else"
+		emit ListingCancelled(_listingId, isTokenListing);
 	}
 
-	function confirmOrderExecution(uint256 orderId) external {
-		require(
-			msg.sender == orders[orderId].issuer,
-			"Only the issuer can confirm execution."
+	function purchaseTokenWithEth(
+		uint256 _listingId
+	) external payable nonReentrant {
+		TokenListing memory listing = tokenListings[_listingId];
+		require(msg.value == listing.price, "Incorrect price");
+		IERC20(listing.tokenAddress).transfer(msg.sender, listing.amount);
+		payable(listing.seller).transfer(msg.value);
+		emit PurchasedWithToken(
+			_listingId,
+			msg.sender,
+			listing.amount,
+			msg.value
 		);
-		require(orders[orderId].isActive, "Order is already inactive.");
-
-		changeOrderActiveState(orderId, false); // Zmieniamy stan zlecenia na nieaktywne
-		emit OrderConfirmed(orderId, msg.sender); // Emitujemy zdarzenie potwierdzenia wykonania
+		delete tokenListings[_listingId];
 	}
 
-	// Funkcja do odczytu aktywnych zleceń kupna
-	function getActiveBuyOrders() external view returns (Order[] memory) {
+	function purchaseTokenWithListing(
+		uint256 _ethListingId,
+		uint256 _tokenListingId
+	) external nonReentrant {
+		EthListing memory ethListing = ethListings[_ethListingId];
+		TokenListing memory tokenListing = tokenListings[_tokenListingId];
+		require(ethListing.buyer == msg.sender, "Not the eth listing buyer");
+		require(
+			ethListing.tokenAddress == tokenListing.tokenAddress,
+			"Different token addresses"
+		);
+		require(
+			ethListing.tokenAmountWanted == tokenListing.amount,
+			"Token amount mismatch"
+		);
+		require(
+			ethListing.amountEth == tokenListing.price,
+			"ETH amount mismatch"
+		);
+		// Transfer tokens to the ETH listing's buyer
+		IERC20(tokenListing.tokenAddress).transfer(
+			ethListing.buyer,
+			tokenListing.amount
+		);
+		// Transfer ETH to the token listing's seller
+		payable(tokenListing.seller).transfer(ethListing.amountEth);
+
+		emit PurchasedWithEth(
+			_ethListingId,
+			tokenListing.seller,
+			ethListing.amountEth
+		);
+
+		// Clean up the listings after the purchase
+		delete ethListings[_ethListingId];
+		delete tokenListings[_tokenListingId];
+	}
+
+	// Function to view active token listings
+	function getActiveTokenListings()
+		external
+		view
+		returns (TokenListing[] memory)
+	{
 		uint256 activeCount = 0;
-		for (uint256 i = 0; i < orders.length; i++) {
-			if (orders[i].isActive && orders[i].isBuyOrder) {
+		for (uint256 i = 0; i < nextTokenListingId; i++) {
+			if (tokenListings[i].seller != address(0)) {
 				activeCount++;
 			}
 		}
 
-		Order[] memory activeBuyOrders = new Order[](activeCount);
+		TokenListing[] memory activeListings = new TokenListing[](activeCount);
 		uint256 currentIndex = 0;
-		for (uint256 i = 0; i < orders.length; i++) {
-			if (orders[i].isActive && orders[i].isBuyOrder) {
-				activeBuyOrders[currentIndex] = orders[i];
+		for (uint256 i = 0; i < nextTokenListingId; i++) {
+			if (tokenListings[i].seller != address(0)) {
+				activeListings[currentIndex] = tokenListings[i];
 				currentIndex++;
 			}
 		}
-		return activeBuyOrders;
+
+		return activeListings;
 	}
 
-	// Funkcja do odczytu aktywnych zleceń sprzedaży
-	function getActiveSellOrders() external view returns (Order[] memory) {
+	// Function to view active ETH listings
+	function getActiveEthListings()
+		external
+		view
+		returns (EthListing[] memory)
+	{
 		uint256 activeCount = 0;
-		for (uint256 i = 0; i < orders.length; i++) {
-			if (orders[i].isActive && !orders[i].isBuyOrder) {
+		for (uint256 i = 0; i < nextEthListingId; i++) {
+			if (ethListings[i].buyer != address(0)) {
 				activeCount++;
 			}
 		}
 
-		Order[] memory activeSellOrders = new Order[](activeCount);
+		EthListing[] memory activeListings = new EthListing[](activeCount);
 		uint256 currentIndex = 0;
-		for (uint256 i = 0; i < orders.length; i++) {
-			if (orders[i].isActive && !orders[i].isBuyOrder) {
-				activeSellOrders[currentIndex] = orders[i];
+		for (uint256 i = 0; i < nextEthListingId; i++) {
+			if (ethListings[i].buyer != address(0)) {
+				activeListings[currentIndex] = ethListings[i];
 				currentIndex++;
 			}
 		}
-		return activeSellOrders;
-	}
 
-	// Implementacja dodatkowych funkcji zarządzania kontraktem
-	function setFee(uint256 _newFee) external onlyOwner {
-		fee = _newFee;
-	}
-
-	function setFeeRecipient(address _newFeeRecipient) external onlyOwner {
-		require(
-			_newFeeRecipient != address(0),
-			"Fee recipient cannot be the zero address."
-		);
-		feeRecipient = _newFeeRecipient;
-	}
-
-	function withdrawFees() external onlyOwner {
-		uint256 balance = address(this).balance;
-		require(balance > 0, "No fees to withdraw.");
-		payable(feeRecipient).transfer(balance);
+		return activeListings;
 	}
 }

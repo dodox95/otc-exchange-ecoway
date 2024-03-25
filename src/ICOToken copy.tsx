@@ -5,8 +5,8 @@ import { toast } from "react-hot-toast";
 import OTCMarketArtifacts from "../src/artifacts/contracts/OTC.sol/OTCMarket.json";
 import ITManTokenArtifacts from "../src/artifacts/contracts/ITManToken.sol/ITManToken.json";
 
-const tokenAddress = "0x7712Da3dA92c3125fDA5Cbc8f6Ac03743f9b08c8";
-const otcMarketAddress = "0xD7ED4ec8675d8f9b7089164BE80b092747Af7817";
+const tokenAddress = "0x60D247590c85a0330FC7a70D9Ee94Ce4D6C0090D";
+const otcMarketAddress = "0xc7e4F1299e7aB542ddfc7C7f9f10922e9bC0194B";
 
 function OTCMarketComponent() {
   const { account, library } = useWeb3React();
@@ -14,19 +14,11 @@ function OTCMarketComponent() {
   const [price, setPrice] = useState("");
   const [tokenListings, setTokenListings] = useState([]);
   const [ethListings, setEthListings] = useState([]);
-  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    const checkOwnerStatus = async () => {
-      if (library) {
-        const contract = new ethers.Contract(otcMarketAddress, OTCMarketArtifacts.abi, library.getSigner());
-        const owner = await contract.owner();
-        setIsOwner(owner.toLowerCase() === account?.toLowerCase());
-        fetchListings();
-      }
-    };
-
-    checkOwnerStatus();
+    if (library) {
+      fetchListings();
+    }
   }, [library, account]);
 
   const fetchListings = async () => {
@@ -47,22 +39,15 @@ function OTCMarketComponent() {
       toast.error("Please enter both amount and price.");
       return;
     }
-  
-    const tokenContract = new ethers.Contract(tokenAddress, ITManTokenArtifacts.abi, library.getSigner(account));
+    const contract = new ethers.Contract(otcMarketAddress, OTCMarketArtifacts.abi, library.getSigner(account));
     try {
-      const amountInWei = ethers.utils.parseUnits(amount, "ether");
-      const approveTx = await tokenContract.approve(otcMarketAddress, amountInWei);
-      await approveTx.wait();
-      toast.success("Token usage approved successfully.");
-      
-      const otcContract = new ethers.Contract(otcMarketAddress, OTCMarketArtifacts.abi, library.getSigner(account));
-      const listTx = await otcContract.listTokenForSale(tokenAddress, amountInWei, ethers.utils.parseUnits(price, "ether"));
-      await listTx.wait();
+      const tx = await contract.listTokenForSale(tokenAddress, ethers.utils.parseUnits(amount, "ether"), ethers.utils.parseUnits(price, "ether"));
+      await tx.wait();
       toast.success("Token listed for sale successfully.");
       fetchListings();
     } catch (error) {
-      console.error("Failed to list token for sale or approval failed:", error);
-      toast.error("Could not complete the operation.");
+      console.error("Failed to list token for sale:", error);
+      toast.error("Could not list token for sale.");
     }
   };
 
@@ -76,24 +61,6 @@ function OTCMarketComponent() {
     } catch (error) {
       console.error("Failed to cancel listing:", error);
       toast.error("Could not cancel listing.");
-    }
-  };
-
-  const cancelListingByOwner = async (listingId, isTokenListing) => {
-    if (!isOwner) {
-      toast.error("Only the contract owner can cancel listings this way.");
-      return;
-    }
-  
-    const contract = new ethers.Contract(otcMarketAddress, OTCMarketArtifacts.abi, library.getSigner());
-    try {
-      const tx = await contract.cancelListingByOwner(listingId, isTokenListing);
-      await tx.wait();
-      toast.success("Listing cancelled by owner successfully.");
-      fetchListings();
-    } catch (error) {
-      console.error("Failed to cancel listing by owner:", error);
-      toast.error("Could not cancel listing by owner.");
     }
   };
 
@@ -117,15 +84,10 @@ function OTCMarketComponent() {
         <h3>Token Listings</h3>
         {tokenListings.map((listing, index) => (
           <div key={index}>
-            <p>ID: {index} Seller: {listing.seller}</p>
+            <p>Seller: {listing.seller}</p>
             <p>Amount: {ethers.utils.formatUnits(listing.amount, "ether")}</p>
             <p>Price: {ethers.utils.formatUnits(listing.price, "ether")} ETH</p>
-            <button onClick={() => cancelListing(index, true)}>Cancel Listing</button>
-            {isOwner && (
-              <button onClick={() => cancelListingByOwner(index, true)}>
-                Cancel as Owner
-              </button>
-            )}
+            <button onClick={() => cancelListing(listing.id, true)}>Cancel Listing</button>
           </div>
         ))}
       </div>
@@ -133,19 +95,15 @@ function OTCMarketComponent() {
         <h3>ETH Listings</h3>
         {ethListings.map((listing, index) => (
           <div key={index}>
-            <p>ID: {index} Buyer: {listing.buyer}</p>
+            <p>Buyer: {listing.buyer}</p>
             <p>Amount ETH: {ethers.utils.formatUnits(listing.amountEth, "ether")}</p>
-            <button onClick={() => cancelListing(index, false)}>Cancel Listing</button>
-            {isOwner && (
-              <button onClick={() => cancelListingByOwner(index, false)}>
-                Cancel as Owner
-              </button>
-            )}
+            <button onClick={() => cancelListing(listing.id, false)}>Cancel Listing</button>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default OTCMarketComponent;
+       ))}
+       </div>
+     </div>
+   );
+ }
+ 
+ export default OTCMarketComponent;
+ 
