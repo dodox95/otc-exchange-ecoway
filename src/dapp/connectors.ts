@@ -1,3 +1,4 @@
+// src\dapp\connectors.ts
 import { InjectedConnector } from "@web3-react/injected-connector";
 
 export const POLLING_INTERVAL = 12000;

@@ -20,6 +20,16 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 		uint256 tokenAmountWanted;
 	}
 
+	struct TokenListingWithId {
+		uint256 listingId;
+		TokenListing listing;
+	}
+
+	struct EthListingWithId {
+		uint256 listingId;
+		EthListing listing;
+	}
+
 	mapping(uint256 => TokenListing) public tokenListings;
 	mapping(uint256 => EthListing) public ethListings;
 
@@ -186,7 +196,7 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 	function getActiveTokenListings()
 		external
 		view
-		returns (TokenListing[] memory)
+		returns (TokenListingWithId[] memory)
 	{
 		uint256 activeCount = 0;
 		for (uint256 i = 0; i < nextTokenListingId; i++) {
@@ -195,11 +205,16 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 			}
 		}
 
-		TokenListing[] memory activeListings = new TokenListing[](activeCount);
+		TokenListingWithId[] memory activeListings = new TokenListingWithId[](
+			activeCount
+		);
 		uint256 currentIndex = 0;
 		for (uint256 i = 0; i < nextTokenListingId; i++) {
 			if (tokenListings[i].seller != address(0)) {
-				activeListings[currentIndex] = tokenListings[i];
+				activeListings[currentIndex] = TokenListingWithId(
+					i,
+					tokenListings[i]
+				);
 				currentIndex++;
 			}
 		}
@@ -208,10 +223,11 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 	}
 
 	// Function to view active ETH listings
+	// Zmodyfikowana funkcja w kontrakcie
 	function getActiveEthListings()
 		external
 		view
-		returns (EthListing[] memory)
+		returns (EthListingWithId[] memory)
 	{
 		uint256 activeCount = 0;
 		for (uint256 i = 0; i < nextEthListingId; i++) {
@@ -220,11 +236,16 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 			}
 		}
 
-		EthListing[] memory activeListings = new EthListing[](activeCount);
+		EthListingWithId[] memory activeListings = new EthListingWithId[](
+			activeCount
+		);
 		uint256 currentIndex = 0;
 		for (uint256 i = 0; i < nextEthListingId; i++) {
 			if (ethListings[i].buyer != address(0)) {
-				activeListings[currentIndex] = ethListings[i];
+				activeListings[currentIndex] = EthListingWithId(
+					i,
+					ethListings[i]
+				);
 				currentIndex++;
 			}
 		}

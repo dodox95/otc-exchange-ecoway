@@ -47,6 +47,16 @@ export declare namespace OTCMarket {
     tokenAmountWanted: BigNumber;
   };
 
+  export type EthListingWithIdStruct = {
+    listingId: BigNumberish;
+    listing: OTCMarket.EthListingStruct;
+  };
+
+  export type EthListingWithIdStructOutput = [
+    BigNumber,
+    OTCMarket.EthListingStructOutput
+  ] & { listingId: BigNumber; listing: OTCMarket.EthListingStructOutput };
+
   export type TokenListingStruct = {
     seller: string;
     tokenAddress: string;
@@ -65,6 +75,16 @@ export declare namespace OTCMarket {
     amount: BigNumber;
     price: BigNumber;
   };
+
+  export type TokenListingWithIdStruct = {
+    listingId: BigNumberish;
+    listing: OTCMarket.TokenListingStruct;
+  };
+
+  export type TokenListingWithIdStructOutput = [
+    BigNumber,
+    OTCMarket.TokenListingStructOutput
+  ] & { listingId: BigNumber; listing: OTCMarket.TokenListingStructOutput };
 }
 
 export interface OTCMarketInterface extends utils.Interface {
@@ -369,11 +389,11 @@ export interface OTCMarket extends BaseContract {
 
     getActiveEthListings(
       overrides?: CallOverrides
-    ): Promise<[OTCMarket.EthListingStructOutput[]]>;
+    ): Promise<[OTCMarket.EthListingWithIdStructOutput[]]>;
 
     getActiveTokenListings(
       overrides?: CallOverrides
-    ): Promise<[OTCMarket.TokenListingStructOutput[]]>;
+    ): Promise<[OTCMarket.TokenListingWithIdStructOutput[]]>;
 
     listEthForTokens(
       _tokenAddress: string,
@@ -453,11 +473,11 @@ export interface OTCMarket extends BaseContract {
 
   getActiveEthListings(
     overrides?: CallOverrides
-  ): Promise<OTCMarket.EthListingStructOutput[]>;
+  ): Promise<OTCMarket.EthListingWithIdStructOutput[]>;
 
   getActiveTokenListings(
     overrides?: CallOverrides
-  ): Promise<OTCMarket.TokenListingStructOutput[]>;
+  ): Promise<OTCMarket.TokenListingWithIdStructOutput[]>;
 
   listEthForTokens(
     _tokenAddress: string,
@@ -537,11 +557,11 @@ export interface OTCMarket extends BaseContract {
 
     getActiveEthListings(
       overrides?: CallOverrides
-    ): Promise<OTCMarket.EthListingStructOutput[]>;
+    ): Promise<OTCMarket.EthListingWithIdStructOutput[]>;
 
     getActiveTokenListings(
       overrides?: CallOverrides
-    ): Promise<OTCMarket.TokenListingStructOutput[]>;
+    ): Promise<OTCMarket.TokenListingWithIdStructOutput[]>;
 
     listEthForTokens(
       _tokenAddress: string,
