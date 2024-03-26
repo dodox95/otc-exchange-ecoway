@@ -2,7 +2,7 @@
 set /p commitMessage="Enter update title: "
 
 echo Fetching the latest changes from GitHub...
-git pull
+git pull origin master --no-edit
 
 echo Adding all changes to the index...
 git add .

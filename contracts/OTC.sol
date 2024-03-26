@@ -154,42 +154,35 @@ contract OTCMarket is ReentrancyGuard, Ownable {
 		delete tokenListings[_listingId];
 	}
 
-	function purchaseTokenWithListing(
-		uint256 _ethListingId,
-		uint256 _tokenListingId
+	function purchaseETHWithTokens(
+		uint256 ethListingId,
+		uint256 tokenAmount
 	) external nonReentrant {
-		EthListing memory ethListing = ethListings[_ethListingId];
-		TokenListing memory tokenListing = tokenListings[_tokenListingId];
-		require(ethListing.buyer == msg.sender, "Not the eth listing buyer");
+		EthListing memory ethListing = ethListings[ethListingId];
 		require(
-			ethListing.tokenAddress == tokenListing.tokenAddress,
-			"Different token addresses"
+			ethListing.tokenAddress != address(0),
+			"ETH listing does not exist"
 		);
 		require(
-			ethListing.tokenAmountWanted == tokenListing.amount,
-			"Token amount mismatch"
-		);
-		require(
-			ethListing.amountEth == tokenListing.price,
-			"ETH amount mismatch"
-		);
-		// Transfer tokens to the ETH listing's buyer
-		IERC20(tokenListing.tokenAddress).transfer(
-			ethListing.buyer,
-			tokenListing.amount
-		);
-		// Transfer ETH to the token listing's seller
-		payable(tokenListing.seller).transfer(ethListing.amountEth);
-
-		emit PurchasedWithEth(
-			_ethListingId,
-			tokenListing.seller,
-			ethListing.amountEth
+			ethListing.tokenAmountWanted <= tokenAmount,
+			"Insufficient token amount"
 		);
 
-		// Clean up the listings after the purchase
-		delete ethListings[_ethListingId];
-		delete tokenListings[_tokenListingId];
+		uint256 ethAmount = ethListing.amountEth;
+		address buyer = msg.sender;
+		address seller = ethListing.buyer; // W tym kontekście, "kupujący" ETH jest sprzedającym tokeny.
+
+		IERC20(ethListing.tokenAddress).transferFrom(
+			buyer,
+			seller,
+			tokenAmount
+		);
+		payable(buyer).transfer(ethAmount);
+
+		emit PurchasedWithEth(ethListingId, seller, ethAmount);
+
+		// Usunięcie oferty ETH po zakończeniu transakcji
+		delete ethListings[ethListingId];
 	}
 
 	// Function to view active token listings
