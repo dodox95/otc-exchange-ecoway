@@ -20,7 +20,7 @@ function App() {
         <div className="App">
           <Demo />
           {/* } <ICOToken otcMarketAddress={otcAddress} /> */}
-          <ICOToken otcMarketAddress="0xD0062E291a0A58126F7fD20f3FFD5713Dff5135b" />
+          <ICOToken otcMarketAddress="0x786c0F5672AB580aDE52882A486d186d89812Ea3" />
           <footer className="p-10 footer bg-base-200 text-base-content">
             <div>
               <p>

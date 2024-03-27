@@ -6,8 +6,8 @@ import { toast } from "react-hot-toast";
 import OTCMarketArtifacts from "../src/artifacts/contracts/OTC.sol/OTCMarket.json";
 import ITManTokenArtifacts from "../src/artifacts/contracts/ITManToken.sol/ITManToken.json";
 
-const tokenAddress = "0xD0062E291a0A58126F7fD20f3FFD5713Dff5135b";
-const otcMarketAddress = "0x6bD59587Dfe9e6062F8Ffe93b98ab8DEaa725B84";
+const tokenAddress = "0x786c0F5672AB580aDE52882A486d186d89812Ea3";
+const otcMarketAddress = "0xD24dB8124b57dB7511860f98d78A914070E524Ba";
 
 function OTCMarketComponent() {
   const { account, library } = useWeb3React();
@@ -172,6 +172,43 @@ const purchaseTokenWithListing = async (ethListingId, tokenListingId) => {
 };
 
 
+const purchaseETHWithTokens = async (ethListingId) => {
+  if (!library || !account) {
+    toast.error("Please connect your wallet.");
+    return;
+  }
+
+  const ethListing = ethListings.find(listing => listing.listingId === ethListingId);
+  if (!ethListing) {
+    toast.error("ETH listing not found.");
+    return;
+  }
+
+  const tokenAmount = ethListing.listing.tokenAmountWanted;
+
+  const contract = new ethers.Contract(otcMarketAddress, OTCMarketArtifacts.abi, library.getSigner(account));
+  const tokenContract = new ethers.Contract(tokenAddress, ITManTokenArtifacts.abi, library.getSigner(account));
+
+  try {
+    // Najpierw zatwierdź tokeny do transferu
+    const approvalTx = await tokenContract.approve(otcMarketAddress, tokenAmount);
+    await approvalTx.wait();
+
+    // Zrealizuj zakup ETH za tokeny
+    const tx = await contract.purchaseETHWithTokens(ethListingId, tokenAmount);
+    await tx.wait();
+
+    toast.success("ETH purchased successfully with tokens.");
+    fetchListings();
+  } catch (error) {
+    console.error("Purchase failed:", error);
+    toast.error("Failed to purchase ETH with tokens.");
+  }
+};
+
+
+
+
   return (
   <div>
     <h2>OTC Market</h2>
@@ -222,9 +259,8 @@ const purchaseTokenWithListing = async (ethListingId, tokenListingId) => {
 }
 
       </div>
-      // Updated ETH Listings section with trading functionality
 
-<div>
+      <div>
   <h3>ETH Listings</h3>
   {
     ethListings.map((ethListingWithId) => {
@@ -232,18 +268,11 @@ const purchaseTokenWithListing = async (ethListingId, tokenListingId) => {
       return (
         <div key={ethListingId.toString()}>
           <p>ID: {ethListingId.toString()} Buyer: {ethListing.buyer}</p>
-          <p>Amount ETH: {ethers.utils.formatUnits(ethListing.amountEth, "ether")}</p>
+          <p>Amount ETH: {ethers.utils.formatEther(ethListing.amountEth)} ETH</p>
+          <p>Token Amount Wanted: {ethers.utils.formatUnits(ethListing.tokenAmountWanted, "ether")} Tokens</p>
           <button onClick={() => cancelListing(ethListingId, false)}>Cancel Listing</button>
-          {tokenListings.map((tokenListingWithId) => {
-            // Example of listing token listings as potential trades for each ETH listing
-            const { listingId: tokenListingId, listing: tokenListing } = tokenListingWithId;
-            return (
-              <div key={tokenListingId}>
-                <p>Trade for Token ID: {tokenListingId.toString()}, Seller: {tokenListing.seller}, Amount: {ethers.utils.formatUnits(tokenListing.amount, "ether")} Tokens</p>
-                <button onClick={() => purchaseTokenWithListing(ethListingId, tokenListingId)}>Trade for Tokens</button>
-              </div>
-            );
-          })}
+          <button onClick={() => purchaseETHWithTokens(ethListingId)}>Buy This ETH With Tokens</button>
+
           {isOwner && (
             <button onClick={() => cancelListingByOwner(ethListingId, false)}>
               Cancel as Owner
@@ -254,6 +283,7 @@ const purchaseTokenWithListing = async (ethListingId, tokenListingId) => {
     })
   }
 </div>
+
 
     </div>
   );

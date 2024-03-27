@@ -99,8 +99,8 @@ export interface OTCMarketInterface extends utils.Interface {
     "nextEthListingId()": FunctionFragment;
     "nextTokenListingId()": FunctionFragment;
     "owner()": FunctionFragment;
+    "purchaseETHWithTokens(uint256,uint256)": FunctionFragment;
     "purchaseTokenWithEth(uint256)": FunctionFragment;
-    "purchaseTokenWithListing(uint256,uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "tokenListings(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -118,8 +118,8 @@ export interface OTCMarketInterface extends utils.Interface {
       | "nextEthListingId"
       | "nextTokenListingId"
       | "owner"
+      | "purchaseETHWithTokens"
       | "purchaseTokenWithEth"
-      | "purchaseTokenWithListing"
       | "renounceOwnership"
       | "tokenListings"
       | "transferOwnership"
@@ -163,12 +163,12 @@ export interface OTCMarketInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "purchaseTokenWithEth",
-    values: [BigNumberish]
+    functionFragment: "purchaseETHWithTokens",
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "purchaseTokenWithListing",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "purchaseTokenWithEth",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -221,11 +221,11 @@ export interface OTCMarketInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "purchaseTokenWithEth",
+    functionFragment: "purchaseETHWithTokens",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "purchaseTokenWithListing",
+    functionFragment: "purchaseTokenWithEth",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -414,15 +414,15 @@ export interface OTCMarket extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
+    purchaseETHWithTokens(
+      ethListingId: BigNumberish,
+      tokenAmount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
     purchaseTokenWithEth(
       _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    purchaseTokenWithListing(
-      _ethListingId: BigNumberish,
-      _tokenListingId: BigNumberish,
-      overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
     renounceOwnership(
@@ -498,15 +498,15 @@ export interface OTCMarket extends BaseContract {
 
   owner(overrides?: CallOverrides): Promise<string>;
 
+  purchaseETHWithTokens(
+    ethListingId: BigNumberish,
+    tokenAmount: BigNumberish,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
   purchaseTokenWithEth(
     _listingId: BigNumberish,
     overrides?: PayableOverrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  purchaseTokenWithListing(
-    _ethListingId: BigNumberish,
-    _tokenListingId: BigNumberish,
-    overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
   renounceOwnership(
@@ -582,14 +582,14 @@ export interface OTCMarket extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    purchaseTokenWithEth(
-      _listingId: BigNumberish,
+    purchaseETHWithTokens(
+      ethListingId: BigNumberish,
+      tokenAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    purchaseTokenWithListing(
-      _ethListingId: BigNumberish,
-      _tokenListingId: BigNumberish,
+    purchaseTokenWithEth(
+      _listingId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -726,15 +726,15 @@ export interface OTCMarket extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
+    purchaseETHWithTokens(
+      ethListingId: BigNumberish,
+      tokenAmount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
     purchaseTokenWithEth(
       _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    purchaseTokenWithListing(
-      _ethListingId: BigNumberish,
-      _tokenListingId: BigNumberish,
-      overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
     renounceOwnership(
@@ -799,15 +799,15 @@ export interface OTCMarket extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    purchaseETHWithTokens(
+      ethListingId: BigNumberish,
+      tokenAmount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
     purchaseTokenWithEth(
       _listingId: BigNumberish,
       overrides?: PayableOverrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    purchaseTokenWithListing(
-      _ethListingId: BigNumberish,
-      _tokenListingId: BigNumberish,
-      overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
