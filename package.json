@@ -1,5 +1,5 @@
 {
-  "name": "dapp-token-ico",
+  "name": "ecoway-otc-exchange",
   "version": "0.1.0",
   "scripts": {
     "build": "npx hardhat compile --network localhost && tsc && vite build",

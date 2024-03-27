@@ -275,8 +275,9 @@ const purchaseETHWithTokens = async (ethListingId) => {
     </div>
     <div className="flex flex-col md:flex-row -mx-4">
     <div className="md:w-1/2 px-4">
-    <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6">
-Sell Offers</h2>
+    <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6"><div className="badge badge-primary">
+    Sell Offers</div>
+    </h2>
     <div className="bg-gray-300 text-white p-4 rounded-lg shadow-lg">
     
         {
@@ -329,8 +330,8 @@ Sell Offers</h2>
       </div>
 
       <div className="md:w-1/2 px-4">
-      <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6">
-      Buy Offers</h2>
+      <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6"><div className="badge badge-primary">
+      Buy Offers</div></h2>
     <div className="bg-gray-300 text-white p-4 rounded-lg shadow-lg">
   {
     ethListings.map((ethListingWithId) => {
