@@ -210,82 +210,177 @@ const purchaseETHWithTokens = async (ethListingId) => {
 
 
   return (
-  <div>
-    <h2>OTC Market</h2>
+<div className="min-h-screen bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 pt-7 pb-10">
+  <h2 className="text-4xl md:text-5xl font-bold text-gray-200 text-center my-6">
+  EcoWay OTC Market
+</h2>
+
+
     <div>
       {/* Allow users to choose an action: sell tokens or buy tokens with ETH */}
-      <select value={actionType} onChange={(e) => setActionType(e.target.value)}>
-        <option value="sell">Sell Tokens</option>
-        <option value="buy">Buy Tokens with ETH</option>
-      </select>
-      <input
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Amount"
-      />
-      <input
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Price in ETH"
-      />
-      {actionType === 'sell' && (
-        <button onClick={listTokenForSale}>List Token For Sale</button>
-      )}
-      {actionType === 'buy' && (
-        <button onClick={listEthForTokens}>List ETH For Tokens</button>
-      )}
+      <div className="flex justify-center">
+  <div className="w-1/3 text-gray-200" >
+    What do you want to do?
+    <select
+      value={actionType}
+      onChange={(e) => setActionType(e.target.value)}
+      className="select select-bordered w-full max-w-xs"
+    >
+      <option value="sell" className="text-gray-900">
+        Sell Tokens
+      </option>
+      <option value="buy" className="text-gray-900">
+        Buy Tokens with ETH
+      </option>
+    </select>
+  </div>
+</div>
+
+
+
+<div className="flex flex-col space-y-4 items-center pb-3">
+  <input
+    type="text"
+    value={amount}
+    onChange={(e) => setAmount(e.target.value)}
+    placeholder="Amount"
+    className="input input-bordered w-full max-w-xs"
+  />
+  <input
+    type="text"
+    value={price}
+    onChange={(e) => setPrice(e.target.value)}
+    placeholder="Price in ETH"
+    className="input input-bordered w-full max-w-xs"
+  />
+</div>
+
+{actionType === 'sell' && (
+  <button
+    onClick={listTokenForSale}
+    className="border-2 border-blue-600 rounded-lg px-3 py-2 text-blue-400 cursor-pointer hover:bg-blue-600 hover:text-blue-200"
+  >
+    List $ECY For $ETH
+  </button>
+)}
+{actionType === 'buy' && (
+  <button
+    onClick={listEthForTokens}
+    className="border-2 border-yellow-600 rounded-lg px-3 py-2 text-yellow-400 cursor-pointer hover:bg-yellow-600 hover:text-yellow-200"
+  >
+    List $ETH For $ECY
+  </button>
+)}
+
     </div>
-      <div>
-        <h3>Token Listings</h3>
+    <div className="flex flex-col md:flex-row -mx-4">
+    <div className="md:w-1/2 px-4">
+    <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6">
+Sell Offers</h2>
+    <div className="bg-gray-300 text-white p-4 rounded-lg shadow-lg">
+    
         {
   tokenListings.map((listingWithId) => {
     const { listingId, listing } = listingWithId;
     return (
-      <div key={listingId.toString()}>
-        <p>ID: {listingId.toString()} Seller: {listing.seller}</p>
-        <p>Amount: {ethers.utils.formatUnits(listing.amount, "ether")}</p>
-        <p>Price: {ethers.utils.formatEther(listing.price)} ETH</p>
-        <button onClick={() => cancelListing(listingId, true)}>Cancel Listing</button>
-        <button onClick={() => purchaseTokenWithEth(listingId)}>Buy with ETH</button>
-        {isOwner && (
-              <button onClick={() => cancelListingByOwner(listingId, true)}>
-                Cancel as Owner
-              </button>
-            )}
-      </div>
+<div key={listingId.toString()} className="bg-white shadow-md rounded-lg p-4 mb-4">
+  <div className="flex items-center justify-between mb-3">
+  <div className="badge badge-secondary">ID: {listingId.toString()}</div>
+    <p className="text-sm text-gray-600"><div className="badge badge-accent">Seller: </div><div className="badge badge-ghost">{listing.seller}</div></p>
+  </div>
+  <div className="mb-3">
+
+    <p className="text-indigo-500 font-semibold text-lg">
+      You will Get: <div className="badge badge-primary">{ethers.utils.formatUnits(listing.amount, "ether")} ECY</div>
+    </p>
+    <p className="text-indigo-500 font-semibold text-lg">
+      For: <div className="badge badge-neutral">{ethers.utils.formatEther(listing.price)} ETH</div>
+    </p>
+  </div>
+  <div className="flex items-center space-x-2">
+    <button
+      onClick={() => cancelListing(listingId, true)}
+      className="border-2 border-red-600 rounded-lg px-3 py-2 text-red-400 cursor-pointer hover:bg-red-600 hover:text-red-200"
+    >
+      Cancel Listing
+    </button>
+    <button
+      onClick={() => purchaseTokenWithEth(listingId)}
+      className="border-2 border-green-600 rounded-lg px-3 py-2 text-green-400 cursor-pointer hover:bg-green-600 hover:text-green-200"
+    >
+      Buy with ETH
+    </button>
+    {isOwner && (
+      <button
+        onClick={() => cancelListingByOwner(listingId, true)}
+        className="border-2 border-gray-800 rounded-lg px-3 py-2 text-gray-400 cursor-pointer hover:bg-gray-800 hover:text-gray-200"
+      >
+        Cancel as Owner
+      </button>
+    )}
+  </div>
+</div>
+
       
     );
   })
 }
-
+</div>
       </div>
 
-      <div>
-  <h3>ETH Listings</h3>
+      <div className="md:w-1/2 px-4">
+      <h2 className="text-sm md:text-sm font-bold text-gray-200 text-center my-6">
+      Buy Offers</h2>
+    <div className="bg-gray-300 text-white p-4 rounded-lg shadow-lg">
   {
     ethListings.map((ethListingWithId) => {
       const { listingId: ethListingId, listing: ethListing } = ethListingWithId;
       return (
-        <div key={ethListingId.toString()}>
-          <p>ID: {ethListingId.toString()} Buyer: {ethListing.buyer}</p>
-          <p>Amount ETH: {ethers.utils.formatEther(ethListing.amountEth)} ETH</p>
-          <p>Token Amount Wanted: {ethers.utils.formatUnits(ethListing.tokenAmountWanted, "ether")} Tokens</p>
-          <button onClick={() => cancelListing(ethListingId, false)}>Cancel Listing</button>
-          <button onClick={() => purchaseETHWithTokens(ethListingId)}>Buy This ETH With Tokens</button>
+<div key={ethListingId.toString()} className="bg-white shadow-md rounded-lg p-4 mb-4">
+  <div className="flex items-center justify-between mb-3">
+  <div className="badge badge-secondary">ID: {ethListingId.toString()}</div>
+    <p className="text-sm text-gray-600"><div className="badge badge-accent">Buyer: </div><div className="badge badge-ghost">{ethListing.buyer}</div></p>
+  </div>
+  <div className="mb-3">
+    <p className="text-indigo-500 font-semibold text-lg">
+    You will Get: <div className="badge badge-neutral">{ethers.utils.formatEther(ethListing.amountEth)} ETH</div> 
+    </p>
+    <p className="text-indigo-500 font-semibold text-lg">
+    For: <div className="badge badge-primary">{ethers.utils.formatUnits(ethListing.tokenAmountWanted, "ether")} ECY</div>
+    </p>
+  </div>
+  <div className="flex items-center space-x-2">
+    <button
+      onClick={() => cancelListing(ethListingId, false)}
+      className="border-2 border-red-600 rounded-lg px-3 py-2 text-red-400 cursor-pointer hover:bg-red-600 hover:text-red-200"
+    >
+      Cancel Listing
+    </button>
+    <button
+      onClick={() => purchaseETHWithTokens(ethListingId)}
+      className="border-2 border-green-600 rounded-lg px-3 py-2 text-green-400 cursor-pointer hover:bg-green-600 hover:text-green-200"
+    >
+      Buy This ETH With Tokens
+    </button>
+    {isOwner && (
+      <button
+        onClick={() => cancelListingByOwner(ethListingId, false)}
+        className="border-2 border-gray-800 rounded-lg px-3 py-2 text-gray-400 cursor-pointer hover:bg-gray-800 hover:text-gray-200"
+    >
+      Cancel as Owner
+    </button>
+    )}
+  </div>
+</div>
 
-          {isOwner && (
-            <button onClick={() => cancelListingByOwner(ethListingId, false)}>
-              Cancel as Owner
-            </button>
-          )}
-        </div>
       );
     })
   }
 </div>
 
-
-    </div>
+</div>
+</div>
+</div>
   );
   
 }

@@ -62,7 +62,7 @@ export default function Demo() {
       <div className="flex flex-row mr-4 ml-4 w-full">
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-outline btn-info"
           disabled={disabled}
           onClick={async () => {
             setActivatingConnector(injected);
@@ -83,7 +83,7 @@ export default function Demo() {
           {(active || error) && (
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-outline btn-warning"
               onClick={() => {
                 deactivate();
               }}
